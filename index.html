@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerala Schemes Eligibility Checker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌴 Kerala Government Schemes</h1>
+            <p>Check your eligibility for welfare schemes</p>
+        </header>
+
+        <div class="form-card">
+            <h2>Enter Your Details</h2>
+            <form id="eligibilityForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" min="0" max="120">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Transgender">Transgender</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="income">Annual Income (₹)</label>
+                        <input type="number" id="income" name="income" min="0" step="1000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ration_card">Ration Card Type</label>
+                        <select id="ration_card" name="ration_card">
+                            <option value="">Select</option>
+                            <option value="Yellow">Yellow</option>
+                            <option value="Pink">Pink</option>
+                            <option value="White">White</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="education">Education Level</label>
+                        <input type="text" id="education" name="education" placeholder="e.g., SSLC, Plus Two, Graduate">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="housing_status">Housing Status</label>
+                        <select id="housing_status" name="housing_status">
+                            <option value="">Select</option>
+                            <option value="Homeless">Homeless</option>
+                            <option value="Kutcha house">Kutcha House</option>
+                            <option value="Pucca house">Pucca House</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="marital_status">Marital Status</label>
+                        <select id="marital_status" name="marital_status">
+                            <option value="">Select</option>
+                            <option value="Married">Married</option>
+                            <option value="Unmarried">Unmarried</option>
+                            <option value="Unmarried mother">Unmarried Mother</option>
+                            <option value="Widowed">Widowed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="child_age">Child Age (if applicable)</label>
+                        <input type="number" id="child_age" name="child_age" min="0" max="25">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Check Eligibility</button>
+            </form>
+        </div>
+
+        <div id="results" class="results-section" style="display: none;">
+            <h2>Your Eligible Schemes</h2>
+            <div id="schemesList"></div>
+        </div>
+
+        <div id="roadmapModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="roadmapContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+    volumes:
+      - ./kerala_schemes.json:/app/kerala_schemes.json
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+  agent:
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      - ENVIRONMENT=production
+    command: uvicorn agent:agent_app --host 0.0.0.0 --port 8001
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./style.css:/usr/share/nginx/html/style.css
+      - ./script.js:/usr/share/nginx/html/script.js
+      - ./assistant-simple.html:/usr/share/nginx/html/assistant-simple.html
+      - ./agent-assistant.html:/usr/share/nginx/html/agent-assistant.html
+    restart: unless-stopped

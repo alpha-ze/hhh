@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Form Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 400px;
+            background: white;
+            border-right: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .step-indicator {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-indicator h3 {
+            color: #667eea;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .instructions h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .field-mapping {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .field-mapping h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .field-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        .field-item strong {
+            color: #17a2b8;
+        }
+
+        .warnings {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .warnings h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .warnings ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .warnings li {
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+
+        .next-action {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .next-action h4 {
+            color: #155724;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .next-action p {
+            color: #155724;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            padding: 20px;
+            border-top: 2px solid #e0e0e0;
+            background: white;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .iframe-container {
+            flex: 1;
+            position: relative;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .scheme-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .scheme-info h3 {
+            color: #004085;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .scheme-info p {
+            color: #004085;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>🤖 AI Form Assistant</h2>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Real-time guidance for filling forms</p>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="scheme-info">
+                    <h3 id="schemeName">Loading...</h3>
+                    <p id="schemeBenefit"></p>
+                </div>
+
+                <div class="step-indicator">
+                    <h3>Current Step: <span id="currentStep">1</span></h3>
+                    <p id="stepTitle" style="color: #666; font-size: 0.9rem; margin-top: 5px;"></p>
+                </div>
+
+                <div class="loading" id="loading">
+                    <p>🔄 Analyzing page...</p>
+                </div>
+
+                <div id="guidanceContent"></div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="openOfficialSite()">🌐 Open Official Website</button>
+                <button class="btn btn-primary" onclick="captureAndAnalyze()">📸 Analyze Current Page</button>
+                <button class="btn btn-secondary" onclick="nextStep()">Next Step →</button>
+                <button class="btn btn-secondary" onclick="window.close()">Close Assistant</button>
+            </div>
+        </div>
+
+        <div class="iframe-container">
+            <iframe id="websiteFrame" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const schemeId = urlParams.get('scheme');
+        const officialUrl = urlParams.get('url');
+        let currentStep = 1;
+        let roadmapData = null;
+
+        function openOfficialSite() {
+            if (officialUrl && officialUrl !== 'null') {
+                window.open(officialUrl, '_blank');
+            } else {
+                alert('No official website available for this scheme. Please visit the office mentioned in the steps.');
+            }
+        }
+
+        function showFallbackMessage(url) {
+            const iframe = document.getElementById('websiteFrame');
+            iframe.srcdoc = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: Arial; background: #f5f5f5;">
+                    <div style="text-align: center; max-width: 600px; padding: 40px; background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                        ${url ? `
+                            <h2 style="color: #667eea; margin-bottom: 20px;">🌐 Website Cannot Be Embedded</h2>
+                            <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                                Government websites often block embedding for security reasons.
+                            </p>
+                            <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">
+                                <strong>Click the button below to open the official website in a new tab:</strong>
+                            </p>
+                            <a href="${url}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem;">
+                                Open Official Website →
+                            </a>
+                            <p style="color: #999; margin-top: 30px; font-size: 0.9rem;">
+                                Follow the AI guidance in the sidebar while filling the form
+                            </p>
+                        ` : `
+                            <h2 style="color: #ffc107; margin-bottom: 20px;">⚠️ Offline Application Required</h2>
+                            <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                                This scheme requires offline application at the government office.
+                            </p>
+                            <p style="color: #666; line-height: 1.6;">
+                                Please follow the step-by-step instructions in the sidebar.
+                            </p>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadSchemeData() {
+            try {
+                const response = await fetch(`http://localhost:8000/roadmap/${schemeId}`);
+                const data = await response.json();
+                
+                roadmapData = data;
+                document.getElementById('schemeName').textContent = data.scheme_name;
+                document.getElementById('schemeBenefit').textContent = data.benefit;
+                
+                updateStepInfo();
+                
+                if (officialUrl && officialUrl !== 'null') {
+                    // Try to load the website
+                    const iframe = document.getElementById('websiteFrame');
+                    iframe.src = officialUrl;
+                    
+                    // Show fallback if iframe fails to load
+                    setTimeout(() => {
+                        iframe.onerror = () => showFallbackMessage(officialUrl);
+                    }, 3000);
+                } else {
+                    showFallbackMessage(null);
+                }
+            } catch (error) {
+                console.error('Error loading scheme data:', error);
+            }
+        }
+
+        function updateStepInfo() {
+            if (!roadmapData) return;
+            
+            const step = roadmapData.roadmap[currentStep - 1];
+            if (step) {
+                document.getElementById('currentStep').textContent = currentStep;
+                document.getElementById('stepTitle').textContent = step.title;
+            }
+        }
+
+        async function captureAndAnalyze() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('guidanceContent').innerHTML = '';
+            
+            // Simulate screenshot capture and analysis
+            // In production, use html2canvas or similar library
+            setTimeout(async () => {
+                try {
+                    const response = await fetch('http://localhost:8001/analyze-form', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            scheme_id: schemeId,
+                            screenshot: 'base64_encoded_screenshot',
+                            current_step: currentStep,
+                            user_data: {}
+                        })
+                    });
+                    
+                    const guidance = await response.json();
+                    displayGuidance(guidance);
+                } catch (error) {
+                    displayGuidance({
+                        instructions: [
+                            "Follow the on-screen instructions",
+                            "Fill all required fields carefully",
+                            "Upload documents as specified"
+                        ],
+                        field_mappings: {},
+                        next_action: "Complete the current step",
+                        warnings: ["Ensure all information is accurate"]
+                    });
+                }
+                
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+        }
+
+        function displayGuidance(guidance) {
+            let html = '';
+            
+            if (guidance.instructions && guidance.instructions.length > 0) {
+                html += `
+                    <div class="instructions">
+                        <h4>📋 Step-by-Step Instructions</h4>
+                        <ol>
+                            ${guidance.instructions.map(inst => `<li>${inst}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            if (guidance.field_mappings && Object.keys(guidance.field_mappings).length > 0) {
+                html += `
+                    <div class="field-mapping">
+                        <h4>📝 Field Guide</h4>
+                        ${Object.entries(guidance.field_mappings).map(([field, desc]) => `
+                            <div class="field-item">
+                                <strong>${field}:</strong> ${desc}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            if (guidance.warnings && guidance.warnings.length > 0) {
+                html += `
+                    <div class="warnings">
+                        <h4>⚠️ Important Warnings</h4>
+                        <ul>
+                            ${guidance.warnings.map(warn => `<li>${warn}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (guidance.next_action) {
+                html += `
+                    <div class="next-action">
+                        <h4>✅ Next Action</h4>
+                        <p>${guidance.next_action}</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('guidanceContent').innerHTML = html;
+        }
+
+        function nextStep() {
+            if (roadmapData && currentStep < roadmapData.roadmap.length) {
+                currentStep++;
+                updateStepInfo();
+                captureAndAnalyze();
+            } else {
+                alert('You have completed all steps! 🎉');
+            }
+        }
+
+        // Load scheme data on page load
+        loadSchemeData();
+        
+        // Auto-analyze after 2 seconds
+        setTimeout(captureAndAnalyze, 2000);
+    </script>
+</body>
+</html>

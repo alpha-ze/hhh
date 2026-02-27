@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Form Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .scheme-info {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .scheme-info h2 {
+            color: #004085;
+            margin-bottom: 10px;
+        }
+
+        .scheme-info .benefit {
+            color: #28a745;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .open-website {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .open-website h3 {
+            margin-bottom: 15px;
+        }
+
+        .btn-large {
+            background: white;
+            color: #667eea;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .btn-large:hover {
+            transform: scale(1.05);
+        }
+
+        .step-indicator {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .step-indicator h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .step-indicator .step-title {
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .instructions h4 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .instructions li {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .field-mapping {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .field-mapping h4 {
+            color: #0c5460;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .field-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .field-item strong {
+            color: #17a2b8;
+        }
+
+        .warnings {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .warnings h4 {
+            color: #721c24;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .warnings ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .warnings li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .next-action {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .next-action h4 {
+            color: #155724;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .next-action p {
+            color: #155724;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .progress {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Form Assistant</h1>
+            <p>Step-by-step guidance for your application</p>
+        </div>
+
+        <div class="content">
+            <div class="scheme-info">
+                <h2 id="schemeName">Loading...</h2>
+                <div class="benefit" id="schemeBenefit"></div>
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+
+            <div class="open-website" id="websiteSection">
+                <h3>📱 Open the Official Website</h3>
+                <p style="margin-bottom: 15px; opacity: 0.9;">Click below to open the application form in a new tab</p>
+                <a href="#" id="openWebsiteBtn" class="btn-large" target="_blank">
+                    🌐 Open Application Form
+                </a>
+                <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+                    Keep this window open for guidance while filling the form
+                </p>
+            </div>
+
+            <div class="step-indicator">
+                <h3>Current Step: <span id="currentStep">1</span> of <span id="totalSteps">0</span></h3>
+                <div class="step-title" id="stepTitle"></div>
+            </div>
+
+            <div id="guidanceContent"></div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="refreshGuidance()">🔄 Refresh Guidance</button>
+                <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
+                <button class="btn btn-secondary" onclick="previousStep()">← Previous</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const schemeId = urlParams.get('scheme');
+        const officialUrl = urlParams.get('url');
+        let currentStep = 1;
+        let roadmapData = null;
+
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000' 
+            : 'https://' + window.location.hostname + '/api';
+
+        const AGENT_BASE_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:8001'
+            : 'https://' + window.location.hostname + '/agent';
+
+        async function loadSchemeData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/roadmap/${schemeId}`);
+                const data = await response.json();
+                
+                roadmapData = data;
+                document.getElementById('schemeName').textContent = data.scheme_name;
+                document.getElementById('schemeBenefit').textContent = '💰 ' + data.benefit;
+                document.getElementById('totalSteps').textContent = data.roadmap.length;
+                
+                if (officialUrl && officialUrl !== 'null') {
+                    document.getElementById('openWebsiteBtn').href = officialUrl;
+                } else {
+                    document.getElementById('websiteSection').innerHTML = `
+                        <h3>⚠️ Offline Application Required</h3>
+                        <p style="color: white; opacity: 0.9;">This scheme requires visiting the government office</p>
+                    `;
+                }
+                
+                updateStepInfo();
+                loadGuidance();
+            } catch (error) {
+                console.error('Error loading scheme data:', error);
+                alert('Error loading scheme data. Please ensure the backend is running.');
+            }
+        }
+
+        function updateStepInfo() {
+            if (!roadmapData) return;
+            
+            const step = roadmapData.roadmap[currentStep - 1];
+            if (step) {
+                document.getElementById('currentStep').textContent = currentStep;
+                document.getElementById('stepTitle').textContent = step.title;
+                
+                const progress = (currentStep / roadmapData.roadmap.length) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+            }
+        }
+
+        async function loadGuidance() {
+            document.getElementById('guidanceContent').innerHTML = '<div class="loading">🔄 Loading guidance...</div>';
+            
+            try {
+                const response = await fetch(`${AGENT_BASE_URL}/analyze-form`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        scheme_id: schemeId,
+                        screenshot: 'base64_encoded_screenshot',
+                        current_step: currentStep,
+                        user_data: {}
+                    })
+                });
+                
+                const guidance = await response.json();
+                displayGuidance(guidance);
+            } catch (error) {
+                console.error('Error loading guidance:', error);
+                displayDefaultGuidance();
+            }
+        }
+
+        function displayGuidance(guidance) {
+            let html = '';
+            
+            if (guidance.instructions && guidance.instructions.length > 0) {
+                html += `
+                    <div class="instructions">
+                        <h4>📋 Step-by-Step Instructions</h4>
+                        <ol>
+                            ${guidance.instructions.map(inst => `<li>${inst}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            if (guidance.field_mappings && Object.keys(guidance.field_mappings).length > 0) {
+                html += `
+                    <div class="field-mapping">
+                        <h4>📝 Field Guide</h4>
+                        ${Object.entries(guidance.field_mappings).map(([field, desc]) => `
+                            <div class="field-item">
+                                <strong>${field}:</strong> ${desc}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            if (guidance.warnings && guidance.warnings.length > 0) {
+                html += `
+                    <div class="warnings">
+                        <h4>⚠️ Important Warnings</h4>
+                        <ul>
+                            ${guidance.warnings.map(warn => `<li>${warn}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (guidance.next_action) {
+                html += `
+                    <div class="next-action">
+                        <h4>✅ Next Action</h4>
+                        <p>${guidance.next_action}</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('guidanceContent').innerHTML = html;
+        }
+
+        function displayDefaultGuidance() {
+            if (!roadmapData) return;
+            
+            const step = roadmapData.roadmap[currentStep - 1];
+            if (!step) return;
+            
+            let html = `
+                <div class="instructions">
+                    <h4>📋 Instructions</h4>
+                    <ol>
+                        <li>${step.action}</li>
+                        <li>Method: ${step.method}</li>
+                        <li>Estimated time: ${step.time}</li>
+                    </ol>
+                </div>
+            `;
+            
+            if (step.documents && step.documents.length > 0) {
+                html += `
+                    <div class="warnings">
+                        <h4>📄 Required Documents</h4>
+                        <ul>
+                            ${step.documents.map(doc => `<li>${doc}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (step.location) {
+                html += `
+                    <div class="next-action">
+                        <h4>📍 Location</h4>
+                        <p>${step.location}</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('guidanceContent').innerHTML = html;
+        }
+
+        function nextStep() {
+            if (roadmapData && currentStep < roadmapData.roadmap.length) {
+                currentStep++;
+                updateStepInfo();
+                loadGuidance();
+            } else {
+                alert('🎉 Congratulations! You have completed all steps!');
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepInfo();
+                loadGuidance();
+            }
+        }
+
+        function refreshGuidance() {
+            loadGuidance();
+        }
+
+        // Load scheme data on page load
+        loadSchemeData();
+    </script>
+</body>
+</html>
